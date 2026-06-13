@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+
+<script>
+	/* TODO:
+	 * 
+	 * Finish the rest of the manual
+	 * Add Table of contents at the top
+	 * Use <div>'s better
+	 * Replace some <br>'s with <p></p>'s for smaller line breaks
+	 * Put on Github & My website 
+	 * Make the code tag in the manual look nicer */
+</script>
+
+<body style="background-color: gray;">
+
+<html>
+	<div>
+		<p>Table of contents:</p>
+		<ol>
+			<li><a href="#gettingstarted">Getting Started</a></li>
+			<li><a href="#abouttmux">About tmux</a></li>
+			<li><a href="#aboutthisdocument">About this document</a></li>
+			<li><a href="#otherdocumentation">Other documentation</a></li>
+			<li><a href="#basicconcepts">Basic concepts</a></li>
+			<li><a href="#tmuxserverandclients">tmux server and clients</a></li>
+			<li><a href="#sessionswindowspanes">Sessions, windows, panes</a></li>
+			<li><a href="#summaryofterms">Summary of terms</a></li>
+			<li><a href="#usingtmuxinteractively">Using tmux interactively</a></li>
+			<li><a href="#creatingsessions">Creating sessions</a></li>
+			<li><a href="#thestatusline">The status line</a></li>
+			<li><a href="#theprefixkey">The prefix key</a></li>
+			<li><a href="#helpkeys">Help keys</a></li>
+			<li><a href="#commandsandflags">Commands and flags</a></li>
+			<li><a href="#thecommandprompt">The command prompt</a></li>
+			<li><a href="#attachinganddetachting">Attaching and Detaching</a></li>
+			<li><a href="#listingsessions">Listing sessions</a></li>
+			<li><a href="#killingtmux">Killing tmux entirely</a></li>
+			<li><a href="#creatingwindows">Creating new windows</a></li>
+			<li><a href="#splittingwindows">Splitting the window</a></li>
+			<li><a href="#changingwindows">Changing the current window</a></li>
+			<li><a href="#changingactivepane">Changing the active pane</a></li>
+			<li><a href="#choosingsessionswindowspanes">Choosing sessions, windows and panes</a></li>
+		</ol>
+	</div>
+
+	<head>
+		<title>tmux: Getting Started</title>
+	</head>
+	<body>
+		<div>
+			<h1 id="gettingstarted">Getting Started</h1>
+		</div>
+		<div>
+			<h3 id="abouttmux">About tmux</h3>
+		</div>
+		<div>
+			<p>tmux is a program which runs in a terminal and allows multiple other terminal programs to be run inside it. Each program inside tmux gets its own terminal managed by tmux, which can be accessed from the single terminal where tmux is running - this is called multiplexing and tmux is a terminal multiplexer.</p>
+
+			<br>
+
+			<p>tmux - and any programs running inside it - may be detatched from the terminal where it is running (the outside terminal) and later reattatched to the same or another terminal.</p>
+
+			<br>
+
+			<p>Programs run inside tmux may be full screen interactive programs like <i>vi(1)</i> or <i>top(1)</i>, shells like <i>bash(1)</i> or <i>ksh(1)</i>, or any other program that can be run in a Unix terminal.</p>
+
+			<br>
+
+			<p>There is a powerful feature set to access, manage and organize programs inside tmux, both interactively and from scripts.</p>
+
+			<br>
+
+			<p>The main uses of tmux are to:</p>
+
+			<ul style="list-style-type: disc;">
+				<li>Protect running programs on a remote server from connection drops by running them inside tmux.</li>
+				<li>Allow programs running on a remote server to be accessed from multiple different local computers.</li>
+				<li>Word with multiple programs and shells together in one terminal, a bit like a window manager.</li>
+			</ul>
+
+			<br>
+
+			<p>For example:</p>
+
+			<ul style="list-style-type: disc;">
+				<li>A user connects to a remote server using <i>ssh(1)</i> from an <i>xterm(1)</i> on their work computer and runs several programs: an editor, a compiler and a few shells.</li>
+				<li>They work with these programs interactively, perhaps start compiling, then close the <i>xterm(1)</i> with tmux and go home for the day.</li>
+				<li>They are then able to connect to the same remote server from home, attatch to tmux, and continue from where they were previously.</li>
+
+				<br>
+
+				<p>Here is a screenshot of tmux in an <i>xterm(1)</i> showing the shell:</p>
+
+				<p align="center"><img src="images/tmux_default.png" width=368 height=235></p>
+
+		</div>
+
+		<div>
+			<h3 id="aboutthisdocument">About this document</h3>
+		</div>
+
+		<div>
+			<p>This document gives an overview of some of tmux's key concepts, a description of how to use the main features interactively and some information of basic customization and configuration.</p>
+
+			<br>
+
+			<p>Note that this document may mention features only available in the latest tmux release. Only the latest tmux release is supported. Release are made approximately every six months.
+
+			<br>
+
+			<p>tmux may be installed from package management systems on most major platforms. See <u><span style="color:red">Installing</span></u> for instructions on how to install tmux or how to build it from source.</p>
+
+		</div>
+
+		<div>
+			<h3 id="otherdocumentation">Other documentation and help</h3>
+		</div>
+
+		<div>
+			<p>Here are several places to find documentation and help about tmux:</p>
+
+			<ul style="list-style-type: disc;">
+				<li><img src="images/man_tmux.png" align="right" width=376 height=243><a href="https://man.openbsd.org/tmux">The manual page</a> has detailed reference documentation on tmux and a description of every command, flag and option. Once tmux is installed it is also available in section 1:
+					
+					<br>
+					<br>
+
+					<code>
+						$ man 1 tmux
+					</code>
+				</li>
+
+				<li><u><span style="color:red">The FAQ</span></u> has solutions to commonly asked questions, mostly about specific configuration issues.</li>
+
+				<li>The <a href=mailto:tmux-users@googlegroups.com>tmux-users@googlegroups.com mailing list</a>.</li>
+			</ul>
+
+		</div>
+
+		<div>
+			<h3 id="basicconcepts">Basic concepts</h3>
+		</div>
+
+		<div>
+			<p>tmux has a set of basic concepts and terms it is important to be familiar with. This section gives a description of ow the terminals inside tmux are grouped together and the various terms tmux uses.</p>
+		</div>
+
+		<div>
+			<h4 id="tmuxserverandclients">The tmux server and clients</h4>
+		</div>
+
+		<div>
+			<p>tmux keeps all its state in a single main process, called the tmux server. This runs in the background and manages all the programs running inside tmux and  keeps track of their output. The tmux server is started automatically when the user runs a tmux command and by default exits when there are no running programs.<p>
+
+			<br>
+
+			<p>Users attach to the tmux server by starting a client. This takes over the terminal where it is run and talks to the server using a socket file in <code>/tmp</code>. Each client runs in one terminal, which may be an <i>X(7)</i> terminal such as <i>xterm(1)</i>, the system console, or a terminal inside another program (such as tmux itself). Each client is identified by the name of the outside terminal where it is started, for example <code>/dev/ttypf</code>.</p>
+
+		</div>
+
+		<div>
+			<h4 id="sessionswindowspanes">Sessions, windows, and panes</h4>
+		</div>
+
+		<div>
+			<p><img src="images/tmux_with_panes.png" align="right" width=376 height=243>Every terminal inside tmux belongs to one pane, this is a rectangular area which shows the content of the terminal inside tmux. Becuase each terminal inside tmux is shown in only one pane, the term pane can be used to mean all of the pane, the terminal and the program running inside it. The screenshot to the right shows tmux with panes.</p>
+			<br>
+			<p>Each pane appears in one window. A window is made up of one or more panes which together cover its entire area - so multiple panes may be visible at the same time. A window normally takes up the whole of the terminal where tmux is attatched, but it can be bigger or smaller. The sizes and positions of all the panes in a window is called the window layout.</p>
+
+			<br>
+
+			<p>Every window has a name - by default tmux will choose one but it can be changed by the user. Window names do not have to be unique, windows are usually identified by the session and not the window index rather than their name.</p>
+
+			<br>
+
+			<p><img src="images/tmux_pane_diagram.png" align="right" width=418 height=285>Each pane is separated from the panes around it by a line, this is called the pane border. There is one pane in each window called the active pane, this is where any text typed is sent and is the default pane used for commands that target the window. The pane border of the active pane is marked in green, or if there are only two panes then the top, bottom, left or right half of the border is green.</p>
+
+			<br>
+
+			<p>Multiple windows are grouped together into sessions. If a window is part of a session, it is said to be linked to that session. Windows may be linked to multiple sessions at the same time, although mostly they are only in one. Each window in a session has a number, called the window index - the same window may be linked at different indexes in the different sessions. A session's window list is all the windows linked to that session in order of their indexes.</p>
+
+			<br>
+
+			<p>Each session has one current window, this is the window displayed when the session is attatched and is the default window for any ocmmands that target the session. If the current window is changed, the previous current window becomes known as the last window.</p>
+
+			<br>
+
+			<p>A session may be attatched to one or more clients, which means it is shown on the outside terminal where that client is running. Any text typed into that outside terminal is sent to the active pane in the current window of the attached session. Sessions do not have an index but they do habe a name, which must be unique.</p>
+			<br>
+
+			<p>In summary:</p>
+
+			<ul style="list-style-type: disc;"> 
+				<li>Programs run in terminals in panes, which each belong to one window.</li>
+				<li>Each window has a name and one active pane.</li>
+				<li>Windows are linked to one or more sessions.</li>
+				<li>Each session has a list of windows, each with an index.</li>
+				<li>One of the windows in a session is the current window.</li>
+				<li>Sessions are attached to one or more clients, or are detached (attached to no clients).</li>
+				<li>Each client is attached to one session.</li>
+			</ul>
+		</div>
+
+		<div>
+			<h4 id="summaryofterms">Summary of terms</h4>
+		</div>
+
+		<div>
+				<table> 
+					<script>/*I genuinely cannot tell if this is worse than Dokuwiki tables or not.*/</script>
+				<tr>
+					<th>Term</th>
+					<th>Description</th>
+				</tr>
+				<tr>
+					<td>Client</td>
+					<td>Attatches to a tmux session from an outside terminal such as <i>xterm(1)</i></td>
+				</tr>
+				<tr>
+					<td>Session</td>
+					<td>Groups one or more windows together</td>
+				</tr>
+				<tr>
+					<td>Window</td>
+					<td>Groups one or more panes together, linked to one or more sessions</td>
+				</tr>
+				<tr>
+					<td>Pane</td>
+					<td>Contains a terminal and running program, appears in one window</td>
+				</tr>
+				<tr>
+					<td>Active pane</td>
+					<td>The pane in the current window where typing is send; one per window</td>
+				</tr>
+				<tr>
+					<td>Current window</td>
+					<td>The window in the attached session where typing is sent; one per session</td>
+				</tr>
+				<tr>
+					<td>Last window</td>
+					<td>The previous current window</td>
+				</tr>
+				<tr>
+					<td>Session name</td>
+					<td>The name of a session, defaults to a number starting from zero</td>
+				</tr>
+				<tr>
+					<td>Window list</td>
+					<td>The list of windows in a session in order by number</td>
+				</tr>
+				<tr>
+					<td>Window name</td>
+					<td>The name of a window, defaults to the name of the running program in the active pane</td>
+				</tr>
+				<tr>
+					<td>Window index</td>
+					<td>The number of a window in a session's window list</td>
+				</tr>
+				<tr>
+					<td>Window layout</td>
+					<td>The size and posision of the panes in a window</td>
+				</tr>
+			</table>
+		</div>
+
+		<div>
+			<h3 id="usingtmuxinteractively">Using tmux interactively</h3>
+		</div>
+
+		<div>
+			<h4 id="creatingsessions">Creating sessions</h4>
+		</div>
+
+		<div>
+			<p>To create the first tmux session, tmux is run from the shell. A new session is created using the <code>new-session</code> command - <code>new</code> for short:</p>
+			<br>
+
+			<p><code>$ tmux new</code></p>
+
+			<br>
+
+			<p>Without arguments, <code>new-session</code> creates a new session and attaches to it. Because this is the first session, the tmux server is started and the tmux run from the shell becomes the first client and attaches to it.</p>
+
+			<br>
+
+			<p>The new session will have one window (at index 0) with a single pane containing a shell. The shell prompt should appear at the top of the terminal and the green status line at the bottom (more on the status line is below)</p>
+
+			<br>
+
+			<p>By default, the first session will be called <code>0</code>, the second <code>1</code> and so on. <code>new-session</code> allows a name to be specified for the session with the <code>-s</code> flag:</p>
+
+			<br>
+
+			<p><code>$ tmux new -smysession</code></p>
+
+			<br>
+
+			<p>This creates a new session named <code>mysession</code>. A command may be given instead of running a shell by passing additional arguments. If one argument is given, tmux will pass it to the shell, if more than one it runs the command directly.</p>
+			<p>For example these run <i>emacs(1)</i>:</p>
+			
+			<br>
+
+			<p><code>$ tmux new 'emacs ~/.tmux.conf'</code></p>
+
+			<br>
+
+			<p>Or:</p>
+
+			<br>
+
+			<p><code>$ tmux new -- emacs ~/.tmux.conf</code></p>
+
+			<br>
+
+			<p>By default, tmux calls the first window in the session after whatever is running in it. The <code>-n</code> flag gives a name to use instead, in this case a window <code>mytopwindow</code> running <i>top(1)</i>:
+
+			<br>
+
+			<p><code>$ tmux new -nmytopwindow top</code></p>
+
+			<br>
+
+			<p><code>new-session</code> has other flags - some are covered below. A full list is <a href="https://man.openbsd.org/tmux#new-session">in the tmux manual</a>.</p>
+		</div>
+
+		<div>
+			<h4 id="thestatusline">The status line</h4>
+		</div>
+
+		<div>
+			<p>When a tmux client is attached, it shows a status line on the bottom line of the screen. By default is green and shows:</p>
+
+			<ul style="list-style-type: disc;">
+				<li>On the left, the name of the attached session: <code>[0]</code>.</li>
+				<li>In the middle, a list of the windows in the session, with their index, for example with one window named <code>ksh</code> at index 0: <code>0:ksh</code>.</li>
+				<li>On the right, the pane title in quotes (this defaults to the name of the host running tmux) and the time and the date.</li>
+			</ul>
+
+			<p align="center"><img src="images/tmux_status_line_diagram.png" width=613 height=204></p>
+
+			<p>As new windows are opened, the window list grows - if there are too many windows to fit on the width of the terminal, a <code><</code> or <code>></code> will be added at the left or right or both to show there are hidden windows.</p>
+			<br>
+			<p>In the window list, the current window is marked with a <code>*</code> after the name, and the last window with a <code>-</code>.</p>
+		</div>
+		<div>
+			<h4 id="theprefixkey">The prefix key</h4>
+		</div>
+		<div>
+			<p>Once a tmux client is attached, any keys entered are forwarded to the program running in the active pane of the current window. For keys that control tmux itself, a special key must be pressed first - this is called the prefix keys</p>
+			<br>
+			<p>The default prefix key is <code>C-b</code>, which means the <code>Ctrl</code> key and <code>b</code>. In tmux, modifier keys are shown by prefixing a key with <code>C-</code> for the control key, <code>M-</code> for the meta key (normally <code>Alt</code> on modern computers) and <code>S-</code> for the shift key. These may be combined together, so <code>C-M-x</code> means pressing the control key, meta key and <code>x</code> together.</p>
+
+			<br>
+
+			<p>Pressing <code>C-b</code> twice sends the <code>C-b</code> key to the program running in the active pane</p>
+		</div>
+		<div>
+			<h4 id="helpkeys">Help keys</h4>
+		</div>
+
+		<div>
+			<p>Every default tmux key binding has a short description to help remember what the key does. A list of all the keys and their corresponding description texts can be seen by pressing <code>C-b ?</code>.</p>
+
+			<img src="images/tmux_list_keys.png" align="right" width=376 height=243>
+
+			<p><code>C-b ?</code> enters view mode to show text. A pane in view mode has its own key bindings which do not need the prefix key. These broadly follow <i>emacs(1)</i>. The most important are <code>Up</code>, <code>Down</code>, <code>C-Up</code>, <code>C-Down</code> to scroll up and down, and <code>q</code> to exit the mode. The line number of the top visible line together with the total number of lines is shown in the top right.</p>
+
+			<br>
+
+			<p>Alternatively, the same list can be seen from the shell by running:</p>
+
+			<br>
+
+			<p><code>tmux lsk -N|more</code></p>
+
+			<br>
+
+			<p><code>C-b /</code> shows the description of a single key - a prompt at the bottom of the terminal appears. Pressing a key will show its description in the same place. For example, pressing <code>C-b /</code> then <code>?</code> shows:</p>
+			<br>
+			<p><code>C-b ? List key bindings</code></p>
+			<br>
+		</div>
+
+		<div>
+			<div>
+				<h4 id="commandsandflags">Commands and flags</h4>
+			</div>
+
+			<div>
+				<p>tmux has a large set of commands. These all have a name like <code>new-window</code> or <code>new-session</code> or <code>list-keys</code> and many also have a shorter alias as <code>neww</code> or <code>new</code> or <code>lsk</code>.</p>
+
+				<p></p>
+
+				<p>Any time a key binding is used, it runs one or more tmux commands. For example, <code>C-b c</code> runs the <code>new-window</code> command.</p>
+
+				<p></p>
+
+				<p>Commands can also be used from the shell, as with <code>new-session</code> and <code>list-keys</code> above.</p>
+				<p></p>
+
+				<p>Each command has zero or more flags, in the same way as standard Unix commands. Flags may or may not take a single argument themselves. In addition, commands may take additional arguments after the flags. Flags are passed after the flags. Flags are passed after the command, for example to run the <code>new-session</code> command (alias <code>new</code>) with flags <code>-d</code> and <code>-n</code>:
+
+				<p></p>
+
+				<p><code>$ tmux new-session -d -nmysession</code></p>
+
+				<p></p>
+
+				<p>All commands and their flags are documented in the tmux manual page.</p>
+
+				<p></p>
+
+				<p>This document focuses on the available key bindings, but commands are mentioned for information or where there is a useful flag. They can be entered from the shell or from the command prompt, described in the next section.</p>
+			</div>
+		</div>
+
+		<div>
+			<div>
+				<h4 id="thecommandprompt">The command prompt</h4>
+			</div>
+
+			<div>
+				<img src="images/tmux_command_prompt.png" align="right" width=376 height=243>
+
+				<p>tmux has an interactive command prompt. This can be opened by pressing <code>C-b :</code></p>
+
+				<p></p>
+
+				<p>At the prompt, commands can be entered similarly to how they are at the shell. Output will either be shown for a short period in the status line, or switch the active pane into view mode.</p>
+
+				<p></p>
+
+				<p>By default, the command prompt uses keys similar to <i>emacs</i>; however, if the <code>VISUAL</code> or <code>EDITOR</code> environment variables are set to something containing <code>vi</code> (such as <code>vi</code> or <code>vim</code> <code>nvi</code>), then <i>vi(1)</i>-style keys are used instead.</p>
+
+				<p></p>
+
+				<p>Multiple commands may be entered together at the command prompt by separating them with a semicolon (<code>;</code>). This is called a command sequence.</p>
+			</div>
+		</div>
+
+		<div>
+			<div>
+				<h4 id="attachinganddetachting">Attaching and detaching</h4>
+			</div>
+			
+			<div>
+				<p>Detaching from tmux means that the client exits and detaches from the outside terminal, returning to the shell and leaving tmux session and any programs inside it running in the background. To detach tmux, the <code>C-b d</code> key binding is used. When tmux detaches, it will print a message with the session name:</p>
+
+				<p></p>
+
+				<p><code>[detached (from session mysession)]</code></p>
+
+				<p></p>
+
+				<p>The <code>attach-session</code> command attaches to an existing session. Without arguments, it will attach to the most recently used session that is not already attached:</p>
+
+				<p></p>
+
+				<p><code>$ tmux attach</code></p>
+
+				<p></p>
+
+				<p>Or <code>-t</code> gives the name of a session to attach to:</p>
+
+				<p></p>
+
+				<p><code>$ tmux attach -tmysession</code><p>
+
+				<p></p>
+
+				<p>By default, attaching to a session does not detach from any other clients attached to the same session. The <code>-d</code> flag does this:</p>
+
+				<p></p>
+
+				<p><code>$ tmux attach -dtmysession</code></p>
+
+				<p></p>
+
+				<p>The <code>new-session</code> command has a <code>-A</code> flag to attach to an existing session if it exists, or create a new one if it does not. For a session named <code>mysession</code>:</p>
+
+				<p></p>
+
+				<p><code>$ tmux new -Asmysession</code></p>
+
+				<p></p>
+
+				<p>The <code>-D</code> flag may be added to mkae <code>new-session</code> also behave like <code>attach-session</code> with <code>-d</code> and detach any other clients attached to the session.</p>
+			</div>
+		</div>
+
+		<div>
+			<div>
+				<h4 id="listingsessions">Listing sessions</h4>
+			</div>
+
+			<div>
+				<p>The <code>list-sessions</code> command (alias <code>ls</code>) shows a list of available sessions that can be attached. This shows four sessions called <code>1</code>, <code>2</code>, <code>myothersession</code> and <code>mysession</code>:
+
+				<p></p>
+
+				<p><code>$ tmux ls</code></p>
+				<p><code>1: 3 windows (created Sat Feb 22 11:44:51 2020)</code></p>
+				<p><code>2: 1 windows (created Sat Fab 22 11:44:51 2020)</code></p>
+				<p><code>myothersession: 2 windows (created Sat Feb 22 11:44:51 2020)</code></p>
+				<p><code>mysession: 1 windows (created Sat Feb 22 11:44:51 2020)</code></p>
+				<p></p>
+			</div>
+		</div>
+		<div>
+			<div>
+				<h4 id="killingtmux">Killing tmux entirely</h4>
+			</div>
+			<div>
+				<p>If there are no sessions, windows or panes inside tmux, the server will exit. Ift can also be entirely killed using the <code>kill-server</code> command. For example, at the command prompt:</p>
+				<p></p>
+
+				<p><code>:kill-server</code></p>
+
+			</div>
+		</div>
+		<div>
+			<div>
+				<h4 id="creatingwindows">Creating new windows</h4>
+			</div>
+			<div>
+				<img src="images/tmux_new_windows.png" align="right" width=376 height=243>
+
+				<p>A new window can be created in an attached session with the <code>C-b c</code> key binding which runs the <code>new-window</code> command. The new window is created at the first available index - so the second window will have index 1. The new window becomes the current window of the session.</p>
+				<p></p>
+				<p>If there are any gaps in the window list, they are filled by new windows. So if there are windows with indexes 0 and 2, the next new window will be created as index 1.</p>
+
+				<p></p>
+				<p>The <code>new-window</code> command has some useful flags which can be used with the command prompt:</p>
+				<ul style="list-style-type: disc;">
+					<li>The <code>-d</code> flag creates the window, but does not make it the current window.</li>
+					<li><code>-n</code> allows a name for the new window to be given. For example using the command prompt to create a new window called <code>mynewwindow</code> without making it the current window:
+
+				<p></p>
+
+				<p><code>:neww -dnmynewwindow</code></p>
+
+				</li>
+				<li>The <code>-t</code> flag specifies a terget for the window. Command targets have a special syntax, but for simple use with <code>new-window</code> it use enough just to give a window index. THis creates a window at index 999:
+					<p></p>
+					<p><code>:neww -t999</code></p>
+				</li>
+			</ul>
+			<p></p>
+			<p>A command to be run in the new window may be given to <code>new-window</code> in the same way as <code>new-session</code>. For example to create a new window running <i>top(1)</i>:</p>
+
+			<p></p>
+
+			<p><code>:neww top</code></p>
+			</div>
+		</div>
+
+		<div>
+			<div>
+				<h4 id="splittingwindows">Splitting the window</h4>
+			</div>
+			<div>
+				<img src="images/tmux_split_h.png" align="right" width=376 height=243>
+
+				<p>A pane is created by plitting a window. This is done with the <code>split-window</code> command which is bound to two keys by default:</p>
+
+				<ul style="list-style-type: disc;">
+					<li><code>C-b %</code> splits the current pane into two horizontally, producing two panes next to each other, one on the left and one on the right.</li>
+					<li><code>C-b "</code> splits the current pane into two vertically, producing two panes one above the other.</li>
+				</ul>
+
+				<br>
+
+				<p>Each time a pane is plait into two, each of those panes may be split again using the same key bindings, util the pane becomes too small.</p>
+
+				<br>
+
+				<img src="images/tmux_split_v.png" align="right" width=376 height=243>
+
+				<br>
+				
+				<p><code>split-window</code> has several useful flags:</p>
+				<ul style="list-style-type: disc;">
+					<li><code>-h</code> does a horizontal split and <code>-v</code> a vertical split</li>
+					<li><code>-d</code> does not change the active pane to the newly created pane.</li>
+					<li><code>-f</code> makes a new pane spannign the whole width or height of the window instead of being constrained to the size of hte pane being split.</li>
+					<li><code>-b</code> puts the new pane to the left or above of the pane being split instead of to the right or below.</li>
+				</ul>
+				<p></p>
+				<p>A command to be run in the new pane may be given to <code>split-window</code> in the same way as <code>new-session</code> and <code>new-window</code>
+			</div>
+		</div>
+		<div>
+			<div>
+				<h4 id="changingwindows">Changing the current window</h4>
+			</div>
+			<div>
+				<p>There are several key bindings to change the current window of a session:</p>
+				<ul style="list-style-type: disc;">
+					<li><code>C-b 0</code> changes to window 0, <code>C-b 1</code> to window 1, up to window <code>C-b 9</code> for window 9.</li>
+					<li><code>C-b '</code> prompts for a window index and changes to that window.</code>
+					<li><code>C-b n</code> changes to the next window in the window list by number. So pressing <code>C-b n</code> when in window 1 will change to window 2 if it exists.</li>
+					<li><code>C-b p</code> changes to the previous window in the window list by number</li>
+					<li><code>C-b l</code> changes to the last window, which is the window that was the current window before the window that is now.</li>
+				</ul>
+				<p>These are all variations of the <code>select-window</code> command.</p>
+			</div>
+		</div>
+		<div>
+			<div>
+				<h4 id="changingactivepane">Changing the active pane</h4>
+			</div>
+			<div>
+				<p>The active pane can be changed between the panes in a window with these key bindings:</p>
+				<ul style="list-style-type: disc;">
+					<li><code>C-b Up</code>, <code>C-b Down</code>, <code>C-b Left</code> and <code>C-b Right</code> change to the pane above, below, left or right of the active pane. These keys wrap around the window, so pressing <code>C-b Down</code> on a pane at the bottom will change to a pane at the top.</li>
+					<img src="images/tmux_display_panes.png" align="right" width=368 height=235>
+
+					<li><code>C-b q</code> prints the pane numbers and their sizes on top of the panes for  a short time. Pressing one of the number keys before the y dissapear changes the active pane to the chosen pane, so <code>C-b q 1</code> will change to the pane number 1.</li>
+					<li><code>C-b o</code> moves to the next pane by pane number and <code>C-b C-o</code> swaps that pane with the active pane, so they exchange positions and sizes in the window.</li>
+				</ul>
+				<p>These use the <code>select-pane</code> and <code>display-panes</code> commands.</p>
+
+				<p></p>
+
+				<p>Pane numbers are not fixed, instead panes are numbered by their position in the window, so if the pane with number 0 is swapped with the pane in number 1, the numbers are swapped as well as the panes themselves.</p>
+			</div>
+		</div>
+		<div>
+			<div>
+				<h4 id="choosingsessionswindowspanes">Choosing sessions, windows and panes</h4>
+			</div>
+			<div>
+				<img src="images/tmux_choose_tree1.png" align="right" width=376 height=243>
+				<p>tmux includes a mode where sessions, windows, or panes can be chosen from a tree, this is called tree mode. It can be used to browse sessions, windows, and panes; to change the attached session, the current window or active pane; to kill sessions, windows, and panes; or apply a command to serveral at once by tagging them</p>
+
+				<p></p>
+
+				<p>There are two key bindings to enter tree mode: <code>C-b s</code> starts showing only sessons and with the attached session selected; <code>C-b w</code> starts with sessions expanded so windows are shown and with the current window in the attached session selected.</p>
+
+				<p></p>
+
+				<p>Tree mode splits the window into two sections: the top half has a tree of sessions, windows and panes and the bottom half has a preview of the area around the cursor in each pane. For sessions the preview shows the active panes in as many windows will fit; for windows as many panes as will fit; and for panes only the selected pane.</p>
+
+				<img src="images/tmux_choose_tree2.png" align="right" width=376 height=243>
+
+				<p></p>
+
+				<p>Keys to control tree mode to not require the prefix. The list may be navigated with the <code>Up</code> and <code>Down</code> keys. <code>Enter</code> changes to the selected item (it becomes the attached session, current window or active pane) and exits the mode. <code>Right</code> expands the item if possible - sessions expand to show their windows and windows to show their panes. <code>Left</code> collapses the item to hide any windows or panes. <code>O</code> changes the order of the items and <code>q</code> exits tree mode.</p>
+
+				<p></p>
+
+				<p>Items in the tree are tagged by pressing <code>t</code> and untagged by pressing <code>t</code> again. Tagged items are shown in bold and with <code>*</code> after hteir name. all tagged items may be untagged by pressing <code>T</code>. Tagged items may be killed together by pressing <code>X</code>, or a command applied to them all by pressing <code>:</code> for a prompt.</p>
+
+				<p></p>
+
+				<p>Each item in the tree has a shortcut key in brackets at the start of a line. Pressing this key will immediately choose that item (as if it had been selected and <code>Enter</code> pressed). THe first ten items are keys <code>0</code> to <code>9</code> and after that keys <code>M-a</code> to <code>M-z</code> are used.</p>
+
+				<p></p>
+
+				<p>This is a list of the keys available in tree mode without pressing the prefix key:</p>
+
+				<p></p>
+				<table>
+					<tr>
+						<th>Key</th>
+						<th>Function</th>
+					</tr>
+					<tr>
+						<td><code>Enter</code></td>
+						<td>Change the attached session, current window or active pane</td>
+					</tr>
+					<tr>
+						<td><code>Up</code></td>
+						<td>Select previous item</td>
+					</tr>
+						<td><code>Down</code></td>
+						<td>Select next item</td>
+					</tr>
+					<tr>
+						<td><code>Right</code></td>
+						<td>Expand item</td>
+					</tr>
+					<tr>
+						<td><code>Left</code></td>
+						<td>Collapse item</td>
+					</tr>
+					<tr>
+						<td><code>x</code></td>
+						<td>Kill selected item</td>
+					</tr>
+					<tr>
+						<td><code>X</code></td>
+						<td>Kill tagged items</td>
+					</tr>
+					<tr>
+						<td><code><</code></td>
+						<td>Scroll preview left</td>
+					</tr>
+					<tr>
+						<td><code>></code></td>
+						<td>Scroll preview right</td>
+					</tr>
+					<tr>
+						<td><code>C-s</code></td>
+						<td>Search by name</td>
+					</tr>
+					<tr>
+						<td><code>n</code></td>
+						<td>Repeat last search</td>
+					</tr>
+					<tr>
+						<td><code>t</code></td>
+						<td>Toggle if item is tagged</td>
+					</tr>
+					<tr>
+						<td><code>T</code></td>
+						<td>Tag no items</td>
+					</tr>
+					<tr>
+						<td><code>C-t</code></td>
+						<td>Tag all items</td>
+					</tr>
+					<tr>
+						<td><code>:</code></td>
+						<td>Prompt for a command to run for the selected item or each tagged item</td>
+					</tr>
+					<tr>
+						<td><code>O</code></td>
+						<td>Change sort field</td>
+					</tr>
+					<tr>
+						<td><code>r</code></td>
+						<td>Reverse sort order</td>
+					</tr>
+					<tr>
+						<td><code>v</code></td>
+						<td>Toggle preview</td>
+					</tr>
+					<tr>
+						<td><code>q</code></td>
+						<td>Exit tree mode</td>
+					</tr>
+				</table>
+
+				<p></p>
+				
+				<p>Tree mode is activated with the <code>choose-tree</code> command.</p>
+			</div>
+		</div>
+
+
+	</body>
+</html>
